@@ -1,0 +1,7 @@
+- [ ] Fetch World's life expectancy
+- [ ] Receive some parameters and return a progress in the life
+  - [ ] Gender \*
+  - [ ] Age - {u8}
+  - [ ] Brithday - {date} {timestamp}
+  - [ ] Life's expectancy {f64}
+- [ ] Can Receive a rc file
