@@ -1,4 +1,5 @@
 - [x] Fetch World's life expectancy
+- [ ] fuzzy search nation in World's life expectancy
 - [ ] Receive some parameters and return a progress in the life
   - [ ] Gender
   - [ ] Brithday \* - {date} {timestamp}
