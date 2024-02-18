@@ -1,5 +1,5 @@
 [package]
-name = "life_progress_core"
+name = "life-progress-core"
 version = "0.1.0"
 edition = "2021"
 
