@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use chrono::format::ParseErrorKind;
-use chrono::{Duration, Local, NaiveDate, NaiveDateTime, ParseError};
-use creeper::{get_data, shave_round, CountryInfo};
+use chrono::{Duration, Local, NaiveDate, NaiveDateTime};
+use lifespan_crawler::{get_data, shave_round, CountryInfo};
 
 pub enum Gender {
     Male,

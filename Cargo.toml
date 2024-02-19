@@ -1,11 +1,11 @@
 [package]
-name = "life-progress-core"
+name = "life_progress_core"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-creeper = { path = "../creeper" }
+lifespan_crawler = { path = "../lifespan-crawler", url = "https://github.com/liwuhou/lifespan-crawler.git" }
 anyhow = "*"
 chrono = "*"
