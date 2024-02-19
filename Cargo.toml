@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-lifespan_crawler = { path = "../lifespan-crawler", url = "https://github.com/liwuhou/lifespan-crawler.git" }
+# git = "https://github.com/liwuhou/lifespan-crawler.git" 
+lifespan_crawler = { path = "../lifespan-crawler" }
 anyhow = "*"
 chrono = "*"
