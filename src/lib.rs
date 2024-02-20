@@ -1,9 +1,10 @@
-use std::collections::HashMap;
-
 use anyhow::Result;
 use chrono::{Duration, Local, NaiveDate, NaiveDateTime};
+use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use lifespan_crawler::{get_data, shave_round, CountryInfo};
+use std::collections::HashMap;
 
+#[derive(Clone)]
 pub enum Gender {
     Male,
     Female,
@@ -36,10 +37,18 @@ impl ProgressInfo {
     }
 }
 
-pub fn init(brithday: &str, gender: Option<Gender>, nation: Option<&str>) -> Result<ProgressInfo> {
-    let brithday_time = get_brithday_time(brithday)?;
+pub fn init(birthday: &str, gender: Option<Gender>, nation: Option<&str>) -> Result<ProgressInfo> {
+    let birthday_time = get_birthday_time(birthday)?;
+    get_progress_info(birthday_time, gender, nation)
+}
+
+pub fn get_progress_info(
+    birthday: NaiveDate,
+    gender: Option<Gender>,
+    nation: Option<&str>,
+) -> Result<ProgressInfo> {
     let now_time = Local::now().naive_utc();
-    let rest_duration = now_time.date() - brithday_time;
+    let rest_duration = now_time.date() - birthday;
     if rest_duration < Duration::zero() {
         panic!("Error: birthday must be '%Y-%m-%d', '%Y%m%d' or millis timestamp!");
     }
@@ -53,7 +62,28 @@ pub fn init(brithday: &str, gender: Option<Gender>, nation: Option<&str>) -> Res
     ))
 }
 
-pub fn get_brithday_time(birthday: &str) -> Result<NaiveDate> {
+pub fn search_nation(search: &str) -> Result<Vec<((String, CountryInfo), (i64, Vec<usize>))>> {
+    let search = search.trim();
+    let nation_data = get_data()?;
+    let nation_list: Vec<&String> = nation_data.keys().collect();
+    let matcher = SkimMatcherV2::default();
+
+    Ok(nation_list
+        .iter()
+        .filter_map(|nation| {
+            matcher
+                .fuzzy_indices(*nation, search)
+                .map(|v| ((String::from(*nation), nation_data[*nation].clone()), v))
+        })
+        .collect())
+}
+
+pub fn view_nation(search: &str) -> Option<CountryInfo> {
+    let data = get_data().ok()?;
+    data.get(search).map(|info| info.clone())
+}
+
+pub fn get_birthday_time(birthday: &str) -> Result<NaiveDate> {
     if birthday.contains("-") {
         Ok(NaiveDate::parse_from_str(birthday, "%Y-%m-%d")?)
     } else if birthday.len() == 8 {
@@ -83,20 +113,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_brithday_time() -> Result<()> {
+    fn test_get_birthday_time() -> Result<()> {
         // %Y-%m-%d
         let test_time = "2024-01-17";
-        let result = get_brithday_time("2024-01-17")?;
+        let result = get_birthday_time("2024-01-17")?;
         assert_eq!(result, NaiveDate::parse_from_str(test_time, "%Y-%m-%d")?);
 
         // %Y%m%d
         let test_time = "20240117";
-        let result = get_brithday_time(test_time)?;
+        let result = get_birthday_time(test_time)?;
         assert_eq!(result, NaiveDate::parse_from_str(test_time, "%Y%m%d")?);
 
         // timestamp
         let test_time: &str = "1705481218207";
-        let result = get_brithday_time(test_time)?;
+        let result = get_birthday_time(test_time)?;
         assert_eq!(
             result,
             NaiveDateTime::from_timestamp_millis(test_time.parse::<i64>()?)

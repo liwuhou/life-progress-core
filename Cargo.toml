@@ -10,3 +10,4 @@ edition = "2021"
 lifespan_crawler = { path = "../lifespan-crawler" }
 anyhow = "*"
 chrono = "*"
+fuzzy-matcher = "0.3.7"
